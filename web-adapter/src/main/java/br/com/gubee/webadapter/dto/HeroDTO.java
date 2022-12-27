@@ -3,6 +3,8 @@ package br.com.gubee.webadapter.dto;
 import br.com.gubee.api.in.model.HeroModelApiIn;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 @Getter
 public class HeroDTO {
@@ -27,5 +29,14 @@ public class HeroDTO {
                 .intelligence(heroModelApiIn.getIntelligence())
                 .strength(heroModelApiIn.getStrength())
                 .build();
+    }
+
+    public static List<HeroDTO> toCollectionDTO(List<HeroModelApiIn> heroModelApiInList) {
+        List<HeroDTO> heroes = new ArrayList<>();
+
+        for (var hero : heroModelApiInList)
+            heroes.add(new HeroDTO(hero));
+
+        return heroes;
     }
 }
