@@ -1,9 +1,6 @@
 package br.com.gubee.persistence.adapter;
 
-import br.com.gubee.api.out.GetHeroByIdPort;
-import br.com.gubee.api.out.GetHeroesByNamePort;
-import br.com.gubee.api.out.ListHeroesPort;
-import br.com.gubee.api.out.RegisterHeroPort;
+import br.com.gubee.api.out.*;
 import br.com.gubee.api.out.model.HeroModelApiOut;
 import br.com.gubee.api.out.requests.RegisterHeroRequest;
 import br.com.gubee.persistence.adapter.mapper.HeroRowMapper;
@@ -21,7 +18,7 @@ import java.util.UUID;
 @Repository
 @RequiredArgsConstructor
 public class HeroRepositoryPostgreImpl
-        implements RegisterHeroPort, GetHeroByIdPort, GetHeroesByNamePort, ListHeroesPort {
+        implements RegisterHeroPort, GetHeroByIdPort, GetHeroesByNamePort, ListHeroesPort, FindHeroByNamePort {
 
     private static final String CREATE_HERO_QUERY = "INSERT INTO hero" +
         " (name, race, power_stats_id)" +
@@ -91,29 +88,29 @@ public class HeroRepositoryPostgreImpl
                 new HeroRowMapper()
         );
     }
-//
-//    @Override
-//    public Optional<Hero> findByName(String heroName) {
-//
-//        final Map<String, Object> params = Map.of("heroName",heroName);
-//
-//        Hero hero;
-//
-//        try {
-//            hero = namedParameterJdbcTemplate.queryForObject(
-//                    FIND_HERO_BY_NAME_QUERY,
-//                    params,
-//                    new HeroRowMapper()
-//            );
-//        } catch (EmptyResultDataAccessException e) {
-//            return Optional.empty();
-//        } catch (IncorrectResultSizeDataAccessException e) {
-//            throw new RuntimeException("More than one Hero was found.");
-//        }
-//
-//        return Optional.ofNullable(hero);
-//    }
-//
+
+    @Override
+    public Optional<HeroModelApiOut> findByName(String search) {
+
+        final Map<String, Object> params = Map.of("heroName",search);
+
+        HeroModelApiOut hero;
+
+        try {
+            hero = namedParameterJdbcTemplate.queryForObject(
+                    FIND_HERO_BY_NAME_QUERY,
+                    params,
+                    new HeroRowMapper()
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new RuntimeException("More than one Hero was found.");
+        }
+
+        return Optional.ofNullable(hero);
+    }
+
     @Override
     public List<HeroModelApiOut> findAll() {
         return namedParameterJdbcTemplate.query(
