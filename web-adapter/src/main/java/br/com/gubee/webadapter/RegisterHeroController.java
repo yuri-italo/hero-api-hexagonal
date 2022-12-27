@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class RegisterHeroController {
     }
 
     @PostMapping
-    public ResponseEntity<?> registerHero(@RequestBody CreateHeroRequest createHeroRequest) {
+    public ResponseEntity<?> registerHero(@Valid @RequestBody CreateHeroRequest createHeroRequest) {
         UUID uuid = registerHeroUseCase.registerHero(createHeroRequest);
         return ResponseEntity.created(URI.create(format("/api/v1/heroes/%s", uuid))).build();
     }

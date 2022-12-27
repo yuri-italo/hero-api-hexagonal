@@ -22,9 +22,19 @@ public class Hero {
     private boolean enabled;
 
     public Hero(String name, String race, UUID powerStatsId) {
+        if (!isAValidHero(name,powerStatsId))
+            throw new IllegalArgumentException();
+
         this.name = name;
         this.race = Race.valueOf(race);
         this.powerStatsId = powerStatsId;
+    }
+
+    private boolean isAValidHero(String name, UUID powerStatsId) {
+        if (name == null || name.equals(""))
+            return false;
+
+        return powerStatsId != null;
     }
 
     public UUID getId() {

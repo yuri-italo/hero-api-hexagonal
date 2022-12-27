@@ -1,9 +1,5 @@
-package br.com.gubee.persistence.adapter.configuration;
+package br.com.gubee.configuration;
 
-import br.com.gubee.api.out.RegisterHeroPort;
-import br.com.gubee.api.out.RegisterPowerStatsPort;
-import br.com.gubee.persistence.adapter.HeroRepositoryPostgreImpl;
-import br.com.gubee.persistence.adapter.PowerStatsRepositoryPostgreImpl;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -53,16 +49,6 @@ public class JdbcConfiguration {
     @Bean
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
         return new NamedParameterJdbcTemplate(dataSource());
-    }
-
-    @Bean
-    public RegisterHeroPort registerHeroPort(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        return new HeroRepositoryPostgreImpl(namedParameterJdbcTemplate);
-    }
-
-    @Bean
-    public RegisterPowerStatsPort registerPowerStatsPort(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        return new PowerStatsRepositoryPostgreImpl(namedParameterJdbcTemplate);
     }
 
     /**

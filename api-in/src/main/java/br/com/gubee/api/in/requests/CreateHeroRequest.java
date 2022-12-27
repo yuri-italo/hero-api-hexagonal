@@ -1,6 +1,5 @@
 package br.com.gubee.api.in.requests;
 
-import br.com.gubee.api.in.validation.SelfValidation;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 @Builder
 @Getter
-public class CreateHeroRequest extends SelfValidation<CreateHeroRequest> {
+public class CreateHeroRequest  {
     @NotBlank(message = "message.name.mandatory")
     private final String name;
 
@@ -45,7 +44,5 @@ public class CreateHeroRequest extends SelfValidation<CreateHeroRequest> {
         this.agility = agility;
         this.dexterity = dexterity;
         this.intelligence = intelligence;
-
-        this.validateSelf();
     }
 }

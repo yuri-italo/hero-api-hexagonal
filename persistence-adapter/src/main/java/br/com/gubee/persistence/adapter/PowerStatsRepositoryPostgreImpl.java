@@ -1,17 +1,23 @@
 package br.com.gubee.persistence.adapter;
 
+import br.com.gubee.api.out.GetPowerStatsByIdPort;
 import br.com.gubee.api.out.RegisterPowerStatsPort;
+import br.com.gubee.api.out.model.PowerStatsModelApiOut;
 import br.com.gubee.api.out.requests.RegisterPowerStatsRequest;
+import br.com.gubee.persistence.adapter.mapper.PowerStatsRowMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort {
+public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort, GetPowerStatsByIdPort {
 
     private static final String CREATE_POWER_STATS_QUERY = "INSERT INTO power_stats" +
         " (strength, agility, dexterity, intelligence)" +
@@ -41,26 +47,26 @@ public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort {
             UUID.class);
     }
 
-//    @Override
-//    public PowerStats findById(UUID powerStatsId) {
-//        final Map<String, Object> params = Map.of("uuid",powerStatsId);
-//
-//        PowerStats powerStats;
-//
-//        try {
-//            powerStats = namedParameterJdbcTemplate.queryForObject(
-//                    FIND_POWER_STATS_BY_UUID_QUERY,
-//                    params,
-//                    new PowerStatsRowMapper()
-//            );
-//        } catch (EmptyResultDataAccessException e) {
-//            return null;
-//        } catch (IncorrectResultSizeDataAccessException e) {
-//            throw new RuntimeException("More than one PowerStats was found.");
-//        }
-//
-//        return powerStats;
-//    }
+    @Override
+    public PowerStatsModelApiOut findById(UUID powerStatsId) {
+        final Map<String, Object> params = Map.of("uuid",powerStatsId);
+
+        PowerStatsModelApiOut powerStats;
+
+        try {
+            powerStats = namedParameterJdbcTemplate.queryForObject(
+                    FIND_POWER_STATS_BY_UUID_QUERY,
+                    params,
+                    new PowerStatsRowMapper()
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new RuntimeException("More than one PowerStats was found.");
+        }
+
+        return powerStats;
+    }
 //
 //    @Override
 //    public void update(PowerStats powerStats, UpdateHeroRequest updateHeroRequest) {

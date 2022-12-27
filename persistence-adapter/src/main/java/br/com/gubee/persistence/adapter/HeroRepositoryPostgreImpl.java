@@ -1,17 +1,23 @@
 package br.com.gubee.persistence.adapter;
 
+import br.com.gubee.api.out.GetHeroByIdPort;
 import br.com.gubee.api.out.RegisterHeroPort;
+import br.com.gubee.api.out.model.HeroModelApiOut;
 import br.com.gubee.api.out.requests.RegisterHeroRequest;
+import br.com.gubee.persistence.adapter.mapper.HeroRowMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class HeroRepositoryPostgreImpl implements RegisterHeroPort {
+public class HeroRepositoryPostgreImpl implements RegisterHeroPort, GetHeroByIdPort {
 
     private static final String CREATE_HERO_QUERY = "INSERT INTO hero" +
         " (name, race, power_stats_id)" +
@@ -50,26 +56,26 @@ public class HeroRepositoryPostgreImpl implements RegisterHeroPort {
             UUID.class);
     }
 
-//    @Override
-//    public Optional<Hero> findById(UUID uuid) {
-//        final Map<String, Object> params = Map.of("uuid",uuid);
-//
-//        Hero hero;
-//
-//        try {
-//            hero = namedParameterJdbcTemplate.queryForObject(
-//                    FIND_HERO_BY_UUID_QUERY,
-//                    params,
-//                    new HeroRowMapper()
-//            );
-//        } catch (EmptyResultDataAccessException e) {
-//            return Optional.empty();
-//        } catch (IncorrectResultSizeDataAccessException e) {
-//            throw new RuntimeException("More than one Hero was found.");
-//        }
-//
-//        return Optional.ofNullable(hero);
-//    }
+    @Override
+    public Optional<HeroModelApiOut> findById(UUID uuid) {
+        final Map<String, Object> params = Map.of("uuid",uuid);
+
+        HeroModelApiOut hero;
+
+        try {
+            hero = namedParameterJdbcTemplate.queryForObject(
+                    FIND_HERO_BY_UUID_QUERY,
+                    params,
+                    new HeroRowMapper()
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new RuntimeException("More than one Hero was found.");
+        }
+
+        return Optional.ofNullable(hero);
+    }
 //
 //    @Override
 //    public List<Hero> findManyByName(String heroName) {

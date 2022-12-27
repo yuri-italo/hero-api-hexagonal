@@ -1,4 +1,4 @@
-package br.com.gubee.persistence.adapter.configuration;
+package br.com.gubee.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
