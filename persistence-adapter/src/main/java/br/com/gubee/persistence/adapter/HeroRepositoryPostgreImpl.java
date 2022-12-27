@@ -2,6 +2,7 @@ package br.com.gubee.persistence.adapter;
 
 import br.com.gubee.api.out.GetHeroByIdPort;
 import br.com.gubee.api.out.GetHeroesByNamePort;
+import br.com.gubee.api.out.ListHeroesPort;
 import br.com.gubee.api.out.RegisterHeroPort;
 import br.com.gubee.api.out.model.HeroModelApiOut;
 import br.com.gubee.api.out.requests.RegisterHeroRequest;
@@ -19,7 +20,8 @@ import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class HeroRepositoryPostgreImpl implements RegisterHeroPort, GetHeroByIdPort, GetHeroesByNamePort {
+public class HeroRepositoryPostgreImpl
+        implements RegisterHeroPort, GetHeroByIdPort, GetHeroesByNamePort, ListHeroesPort {
 
     private static final String CREATE_HERO_QUERY = "INSERT INTO hero" +
         " (name, race, power_stats_id)" +
@@ -112,13 +114,13 @@ public class HeroRepositoryPostgreImpl implements RegisterHeroPort, GetHeroByIdP
 //        return Optional.ofNullable(hero);
 //    }
 //
-//    @Override
-//    public List<Hero> findAll() {
-//        return namedParameterJdbcTemplate.query(
-//                FIND_ALL_HEROES_QUERY,
-//                new HeroRowMapper()
-//        );
-//    }
+    @Override
+    public List<HeroModelApiOut> findAll() {
+        return namedParameterJdbcTemplate.query(
+                FIND_ALL_HEROES_QUERY,
+                new HeroRowMapper()
+        );
+    }
 //
 //    @Override
 //    public void update(Hero hero, UpdateHeroRequest updateHeroRequest) {
