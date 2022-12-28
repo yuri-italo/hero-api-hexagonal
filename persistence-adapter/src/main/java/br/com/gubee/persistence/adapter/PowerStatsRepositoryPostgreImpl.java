@@ -1,5 +1,6 @@
 package br.com.gubee.persistence.adapter;
 
+import br.com.gubee.api.out.DeletePowerStatsByIdPort;
 import br.com.gubee.api.out.GetPowerStatsByIdPort;
 import br.com.gubee.api.out.RegisterPowerStatsPort;
 import br.com.gubee.api.out.UpdatePowerStatsPort;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @Repository
 @RequiredArgsConstructor
 public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort,
-        GetPowerStatsByIdPort, UpdatePowerStatsPort
+        GetPowerStatsByIdPort, UpdatePowerStatsPort, DeletePowerStatsByIdPort
 {
 
     private static final String CREATE_POWER_STATS_QUERY = "INSERT INTO power_stats" +
@@ -85,14 +86,14 @@ public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort,
                 params
         );
     }
-//
-//    @Override
-//    public void delete(UUID powerStatsId) {
-//        final Map<String, Object> params = Map.of("id", powerStatsId);
-//
-//        namedParameterJdbcTemplate.update(
-//                DELETE_POWER_STATS_BY_ID_QUERY,
-//                params
-//        );
-//    }
+
+    @Override
+    public void delete(UUID powerStatsId) {
+        final Map<String, Object> params = Map.of("id", powerStatsId);
+
+        namedParameterJdbcTemplate.update(
+                DELETE_POWER_STATS_BY_ID_QUERY,
+                params
+        );
+    }
 }

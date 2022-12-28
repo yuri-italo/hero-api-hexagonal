@@ -18,6 +18,8 @@ public class BeanConfiguration {
     private final FindHeroByNamePort findHeroByNamePort;
     private final UpdateHeroPort updateHeroPort;
     private final UpdatePowerStatsPort updatePowerStatsPort;
+    private final DeleteHeroByIdPort deleteHeroByIdPort;
+    private final DeletePowerStatsByIdPort deletePowerStatsByIdPort;
 
     public BeanConfiguration(
             RegisterHeroPort registerHeroPort,
@@ -28,7 +30,9 @@ public class BeanConfiguration {
             ListHeroesPort listHeroesPort,
             FindHeroByNamePort findHeroByNamePort,
             UpdateHeroPort updateHeroPort,
-            UpdatePowerStatsPort updatePowerStatsPort
+            UpdatePowerStatsPort updatePowerStatsPort,
+            DeleteHeroByIdPort deleteHeroByIdPort,
+            DeletePowerStatsByIdPort deletePowerStatsByIdPort
     ) {
         this.registerHeroPort = registerHeroPort;
         this.registerPowerStatsPort = registerPowerStatsPort;
@@ -39,6 +43,8 @@ public class BeanConfiguration {
         this.findHeroByNamePort = findHeroByNamePort;
         this.updateHeroPort = updateHeroPort;
         this.updatePowerStatsPort = updatePowerStatsPort;
+        this.deleteHeroByIdPort = deleteHeroByIdPort;
+        this.deletePowerStatsByIdPort = deletePowerStatsByIdPort;
     }
 
     @Bean
@@ -69,5 +75,10 @@ public class BeanConfiguration {
     @Bean
     public UpdateHeroUseCase update() {
         return new UpdateHeroService(getHeroByIdPort,updateHeroPort,getPowerStatsByIdPort,updatePowerStatsPort);
+    }
+
+    @Bean
+    public DeleteHeroByIdUseCase delete() {
+        return new DeleteHeroByIdService(getHeroByIdPort,deleteHeroByIdPort,deletePowerStatsByIdPort);
     }
 }

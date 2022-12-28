@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class HeroRepositoryPostgreImpl
         implements RegisterHeroPort, GetHeroByIdPort, GetHeroesByNamePort, ListHeroesPort, FindHeroByNamePort,
-        UpdateHeroPort
+        UpdateHeroPort, DeleteHeroByIdPort
 {
 
     private static final String CREATE_HERO_QUERY = "INSERT INTO hero" +
@@ -135,14 +135,14 @@ public class HeroRepositoryPostgreImpl
                 params
         );
     }
-//
-//    @Override
-//    public void delete(Hero hero) {
-//        final Map<String, Object> params = Map.of("id", hero.getId());
-//
-//        namedParameterJdbcTemplate.update(
-//                DELETE_HERO_QUERY,
-//                params
-//        );
-//    }
+
+    @Override
+    public void delete(UUID heroId) {
+        final Map<String, Object> params = Map.of("id", heroId);
+
+        namedParameterJdbcTemplate.update(
+                DELETE_HERO_QUERY,
+                params
+        );
+    }
 }
