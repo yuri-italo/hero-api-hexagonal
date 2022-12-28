@@ -16,6 +16,8 @@ public class BeanConfiguration {
     private final GetHeroesByNamePort getHeroesByNamePort;
     private final ListHeroesPort listHeroesPort;
     private final FindHeroByNamePort findHeroByNamePort;
+    private final UpdateHeroPort updateHeroPort;
+    private final UpdatePowerStatsPort updatePowerStatsPort;
 
     public BeanConfiguration(
             RegisterHeroPort registerHeroPort,
@@ -24,7 +26,9 @@ public class BeanConfiguration {
             GetPowerStatsByIdPort getPowerStatsByIdPort,
             GetHeroesByNamePort getHeroesByNamePort,
             ListHeroesPort listHeroesPort,
-            FindHeroByNamePort findHeroByNamePort
+            FindHeroByNamePort findHeroByNamePort,
+            UpdateHeroPort updateHeroPort,
+            UpdatePowerStatsPort updatePowerStatsPort
     ) {
         this.registerHeroPort = registerHeroPort;
         this.registerPowerStatsPort = registerPowerStatsPort;
@@ -33,6 +37,8 @@ public class BeanConfiguration {
         this.getHeroesByNamePort = getHeroesByNamePort;
         this.listHeroesPort = listHeroesPort;
         this.findHeroByNamePort = findHeroByNamePort;
+        this.updateHeroPort = updateHeroPort;
+        this.updatePowerStatsPort = updatePowerStatsPort;
     }
 
     @Bean
@@ -58,5 +64,10 @@ public class BeanConfiguration {
     @Bean
     public CompareHeroesUseCase compare() {
         return new CompareHeroService(findHeroByNamePort,getPowerStatsByIdPort);
+    }
+
+    @Bean
+    public UpdateHeroUseCase update() {
+        return new UpdateHeroService(getHeroByIdPort,updateHeroPort,getPowerStatsByIdPort,updatePowerStatsPort);
     }
 }

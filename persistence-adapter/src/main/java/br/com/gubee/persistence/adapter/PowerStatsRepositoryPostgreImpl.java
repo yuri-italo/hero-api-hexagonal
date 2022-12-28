@@ -2,8 +2,10 @@ package br.com.gubee.persistence.adapter;
 
 import br.com.gubee.api.out.GetPowerStatsByIdPort;
 import br.com.gubee.api.out.RegisterPowerStatsPort;
+import br.com.gubee.api.out.UpdatePowerStatsPort;
 import br.com.gubee.api.out.model.PowerStatsModelApiOut;
 import br.com.gubee.api.out.requests.RegisterPowerStatsRequest;
+import br.com.gubee.api.out.requests.UpdatePowerStatsRequestApiOut;
 import br.com.gubee.persistence.adapter.mapper.PowerStatsRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,7 +19,9 @@ import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort, GetPowerStatsByIdPort {
+public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort,
+        GetPowerStatsByIdPort, UpdatePowerStatsPort
+{
 
     private static final String CREATE_POWER_STATS_QUERY = "INSERT INTO power_stats" +
         " (strength, agility, dexterity, intelligence)" +
@@ -67,22 +71,20 @@ public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort, 
 
         return powerStats;
     }
-//
-//    @Override
-//    public void update(PowerStats powerStats, UpdateHeroRequest updateHeroRequest) {
-//        PowerStats modifiedPowerStats = changeFields(powerStats, updateHeroRequest);
-//
-//        final Map<String, Object> params = Map.of("strength", modifiedPowerStats.getStrength(),
-//                "agility", modifiedPowerStats.getAgility(),
-//                "dexterity", modifiedPowerStats.getDexterity(),
-//                "intelligence", modifiedPowerStats.getIntelligence(),
-//                "id", modifiedPowerStats.getId());
-//
-//        namedParameterJdbcTemplate.update(
-//                UPDATE_POWER_STATS_BY_ID_QUERY,
-//                params
-//        );
-//    }
+
+    @Override
+    public void update(UUID uuid, UpdatePowerStatsRequestApiOut updatePowerStatsRequestApiOut) {
+        final Map<String, Object> params = Map.of("strength", updatePowerStatsRequestApiOut.getStrength(),
+                "agility", updatePowerStatsRequestApiOut.getAgility(),
+                "dexterity", updatePowerStatsRequestApiOut.getDexterity(),
+                "intelligence", updatePowerStatsRequestApiOut.getIntelligence(),
+                "id", uuid);
+
+        namedParameterJdbcTemplate.update(
+                UPDATE_POWER_STATS_BY_ID_QUERY,
+                params
+        );
+    }
 //
 //    @Override
 //    public void delete(UUID powerStatsId) {
@@ -92,21 +94,5 @@ public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort, 
 //                DELETE_POWER_STATS_BY_ID_QUERY,
 //                params
 //        );
-//    }
-//
-//    private PowerStats changeFields(PowerStats powerStats, UpdateHeroRequest updateHeroRequest) {
-//        if (updateHeroRequest.getStrength() != null && !(powerStats.getStrength() == updateHeroRequest.getStrength()))
-//            powerStats.setStrength(updateHeroRequest.getStrength());
-//
-//        if (updateHeroRequest.getAgility() != null && !(powerStats.getAgility() == updateHeroRequest.getAgility()))
-//            powerStats.setAgility(updateHeroRequest.getAgility());
-//
-//        if (updateHeroRequest.getDexterity() != null && !(powerStats.getDexterity() == updateHeroRequest.getDexterity()))
-//            powerStats.setDexterity(updateHeroRequest.getDexterity());
-//
-//        if (updateHeroRequest.getStrength() != null && !(powerStats.getIntelligence() == updateHeroRequest.getIntelligence()))
-//            powerStats.setIntelligence(updateHeroRequest.getIntelligence());
-//
-//        return powerStats;
 //    }
 }

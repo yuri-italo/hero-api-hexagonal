@@ -3,6 +3,7 @@ package br.com.gubee.persistence.adapter;
 import br.com.gubee.api.out.*;
 import br.com.gubee.api.out.model.HeroModelApiOut;
 import br.com.gubee.api.out.requests.RegisterHeroRequest;
+import br.com.gubee.api.out.requests.UpdateHeroRequestApiOut;
 import br.com.gubee.persistence.adapter.mapper.HeroRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -18,7 +19,9 @@ import java.util.UUID;
 @Repository
 @RequiredArgsConstructor
 public class HeroRepositoryPostgreImpl
-        implements RegisterHeroPort, GetHeroByIdPort, GetHeroesByNamePort, ListHeroesPort, FindHeroByNamePort {
+        implements RegisterHeroPort, GetHeroByIdPort, GetHeroesByNamePort, ListHeroesPort, FindHeroByNamePort,
+        UpdateHeroPort
+{
 
     private static final String CREATE_HERO_QUERY = "INSERT INTO hero" +
         " (name, race, power_stats_id)" +
@@ -118,21 +121,20 @@ public class HeroRepositoryPostgreImpl
                 new HeroRowMapper()
         );
     }
-//
-//    @Override
-//    public void update(Hero hero, UpdateHeroRequest updateHeroRequest) {
-//        Hero modifiedHero = changeFields(hero, updateHeroRequest);
-//
-//        final Map<String, Object> params = Map.of("name", modifiedHero.getName(),
-//                "race", modifiedHero.getRace().name(),
-//                "enabled", modifiedHero.isEnabled(),
-//                "id", modifiedHero.getId());
-//
-//        namedParameterJdbcTemplate.update(
-//                UPDATE_HERO_BY_ID_QUERY,
-//                params
-//        );
-//    }
+
+    @Override
+    public void update(UUID uuid, UpdateHeroRequestApiOut updateHeroRequestApiOut) {
+
+        final Map<String, Object> params = Map.of("name", updateHeroRequestApiOut.getName(),
+                "race", updateHeroRequestApiOut.getRace(),
+                "enabled", updateHeroRequestApiOut.isEnabled(),
+                "id", uuid);
+
+        namedParameterJdbcTemplate.update(
+                UPDATE_HERO_BY_ID_QUERY,
+                params
+        );
+    }
 //
 //    @Override
 //    public void delete(Hero hero) {
@@ -142,16 +144,5 @@ public class HeroRepositoryPostgreImpl
 //                DELETE_HERO_QUERY,
 //                params
 //        );
-//    }
-//
-//    private Hero changeFields(Hero hero, UpdateHeroRequest updateHeroRequest) {
-//        if (updateHeroRequest.getName() != null && !hero.getName().equals(updateHeroRequest.getName()))
-//            hero.setName(updateHeroRequest.getName());
-//        if (updateHeroRequest.getRace() != null && !hero.getRace().equals(updateHeroRequest.getRace()))
-//            hero.setRace(updateHeroRequest.getRace());
-//        if (updateHeroRequest.getEnabled() != null && !hero.isEnabled() == updateHeroRequest.getEnabled())
-//            hero.setEnabled(updateHeroRequest.getEnabled());
-//
-//        return hero;
 //    }
 }

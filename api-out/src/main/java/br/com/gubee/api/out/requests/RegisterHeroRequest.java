@@ -19,5 +19,4 @@ public class RegisterHeroRequest {
         this.name = name;
         this.race = race;
     }
-
 }
