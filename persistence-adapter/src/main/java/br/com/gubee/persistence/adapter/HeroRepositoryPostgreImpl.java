@@ -92,7 +92,7 @@ public class HeroRepositoryPostgreImpl
     @Override
     public Optional<HeroModelApiOut> findByName(String search) {
 
-        final Map<String, Object> params = Map.of("heroName",search);
+        final Map<String, Object> params = Map.of("search",search);
 
         HeroModelApiOut hero;
 

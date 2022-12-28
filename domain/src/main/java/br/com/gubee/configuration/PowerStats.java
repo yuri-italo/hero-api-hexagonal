@@ -25,6 +25,23 @@ public class PowerStats {
         this.updatedAt = updatedAt;
     }
 
+    public static void compareStats(PowerStats powerStats, PowerStats powerStats2) {
+        int agility = powerStats.getAgility();
+        int dexterity = powerStats.getDexterity();
+        int intelligence = powerStats.getIntelligence();
+        int strength = powerStats.getStrength();
+
+        powerStats.setStrength(powerStats.getStrength() - powerStats2.getStrength());
+        powerStats.setAgility(powerStats.getAgility() - powerStats2.getAgility());
+        powerStats.setDexterity(powerStats.getDexterity() - powerStats2.getDexterity());
+        powerStats.setIntelligence(powerStats.getIntelligence() - powerStats2.getIntelligence());
+
+        powerStats2.setStrength(powerStats2.getStrength() - strength);
+        powerStats2.setAgility(powerStats2.getAgility() - agility);
+        powerStats2.setDexterity(powerStats2.getDexterity() - dexterity);
+        powerStats2.setIntelligence(powerStats2.getIntelligence() - intelligence);
+    }
+
     public UUID getId() {
         return id;
     }

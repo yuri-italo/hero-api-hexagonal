@@ -2,12 +2,14 @@ package br.com.gubee.webadapter;
 
 import br.com.gubee.api.in.model.HeroModelApiIn;
 import br.com.gubee.api.in.ports.CompareHeroesUseCase;
+import br.com.gubee.webadapter.dto.ComparedHeroDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,5 +26,19 @@ public class CompareHeroController {
     @GetMapping(value = "/compare", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> compare(@RequestParam String hero1Name, @RequestParam String hero2Name)  {
         Optional<List<HeroModelApiIn>> heroes = compareHeroesUseCase.compare(hero1Name,hero2Name);
+
+        if (heroes.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(createComparedHeroDTOList(heroes.get()));
+    }
+
+    private List<ComparedHeroDTO> createComparedHeroDTOList(List<HeroModelApiIn> heroModelApiInList) {
+        List<ComparedHeroDTO> comparedHeroDTOList = new ArrayList<>();
+
+        for (var hero: heroModelApiInList)
+            comparedHeroDTOList.add(new ComparedHeroDTO(hero));
+
+        return comparedHeroDTOList;
     }
 }
