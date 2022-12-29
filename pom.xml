@@ -35,6 +35,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
         <jaxb.version>2.3.1</jaxb.version>
         <disruptor.version>3.4.2</disruptor.version>
     </properties>
@@ -148,7 +149,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <annotationProcessorPaths>
                         <path>
