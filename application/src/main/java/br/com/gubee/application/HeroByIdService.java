@@ -6,8 +6,8 @@ import br.com.gubee.api.out.GetHeroByIdPort;
 import br.com.gubee.api.out.GetPowerStatsByIdPort;
 import br.com.gubee.api.out.model.HeroModelApiOut;
 import br.com.gubee.api.out.model.PowerStatsModelApiOut;
+import br.com.gubee.configuration.exception.HeroIdNotFoundException;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class HeroByIdService implements HeroByIdUseCase {
@@ -21,16 +21,11 @@ public class HeroByIdService implements HeroByIdUseCase {
     }
 
     @Override
-    public Optional<HeroModelApiIn> findById(UUID heroId) {
-        Optional<HeroModelApiOut> heroModelApiOutOptional = getHeroByIdPort.findById(heroId);
+    public HeroModelApiIn findById(UUID heroId) {
+        HeroModelApiOut heroModelApiOutOptional = findHeroOrFail(heroId);
+        PowerStatsModelApiOut powerStats = getPowerStatsByIdPort.findById(heroModelApiOutOptional.getPowerStatsId());
 
-        if (heroModelApiOutOptional.isEmpty())
-            return Optional.empty();
-
-        HeroModelApiOut hero = heroModelApiOutOptional.get();
-        PowerStatsModelApiOut powerStats = getPowerStatsByIdPort.findById(hero.getPowerStatsId());
-
-        return Optional.of(createHeroModelApiIn(hero, powerStats));
+        return createHeroModelApiIn(heroModelApiOutOptional, powerStats);
     }
 
     private HeroModelApiIn createHeroModelApiIn(HeroModelApiOut hero, PowerStatsModelApiOut powerStats) {
@@ -47,5 +42,10 @@ public class HeroByIdService implements HeroByIdUseCase {
                 .strength(powerStats.getStrength())
                 .build();
 
+    }
+
+    private HeroModelApiOut findHeroOrFail(UUID heroId) {
+        return getHeroByIdPort.findById(heroId)
+                .orElseThrow(() -> new HeroIdNotFoundException(heroId));
     }
 }

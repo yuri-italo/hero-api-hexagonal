@@ -11,8 +11,8 @@ import br.com.gubee.api.out.model.HeroModelApiOut;
 import br.com.gubee.api.out.model.PowerStatsModelApiOut;
 import br.com.gubee.api.out.requests.UpdateHeroRequestApiOut;
 import br.com.gubee.api.out.requests.UpdatePowerStatsRequestApiOut;
+import br.com.gubee.configuration.exception.HeroIdNotFoundException;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class UpdateHeroService implements UpdateHeroUseCase {
@@ -34,24 +34,17 @@ public class UpdateHeroService implements UpdateHeroUseCase {
     }
 
     @Override
-    public Optional<HeroModelApiIn> update(UUID heroId, UpdateHeroRequest updateHeroRequest) {
-        Optional<HeroModelApiOut> optionalHeroModelApiOut = getHeroByIdPort.findById(heroId);
+    public HeroModelApiIn update(UUID heroId, UpdateHeroRequest updateHeroRequest) {
+        HeroModelApiOut heroModelApiOut = findHeroOrFail(heroId);
 
-        if (optionalHeroModelApiOut.isEmpty())
-            return Optional.empty();
+        HeroModelApiOut updatedHeroModelApiOut = updateHero(heroId, updateHeroRequest, heroModelApiOut);
+        updateHeroPowerStats(updateHeroRequest, updatedHeroModelApiOut);
 
-        HeroModelApiOut heroModelApiOut = updateHero(heroId, updateHeroRequest, optionalHeroModelApiOut);
-        updateHeroPowerStats(updateHeroRequest, heroModelApiOut);
-
-        return Optional.of(createHeroModelApiIn(heroId));
+        return createHeroModelApiIn(heroId);
     }
 
-    private HeroModelApiOut updateHero(UUID heroId, UpdateHeroRequest updateHeroRequest, Optional<HeroModelApiOut> optionalHeroModelApiOut) {
-        HeroModelApiOut heroModelApiOut = optionalHeroModelApiOut
-                .orElseThrow(NullPointerException::new);
-
-        UpdateHeroRequestApiOut updateHeroRequestApiOut = createUpdateHeroRequestApiOut(heroModelApiOut, updateHeroRequest);
-        updateHeroPort.update(heroId, updateHeroRequestApiOut);
+    private HeroModelApiOut updateHero(UUID heroId, UpdateHeroRequest updateHeroRequest, HeroModelApiOut heroModelApiOut) {
+        updateHeroPort.update(heroId, createUpdateHeroRequestApiOut(heroModelApiOut, updateHeroRequest));
         return heroModelApiOut;
     }
 
@@ -63,7 +56,7 @@ public class UpdateHeroService implements UpdateHeroUseCase {
 
     private HeroModelApiIn createHeroModelApiIn(UUID heroId) {
         HeroModelApiOut heroModelApiOut = getHeroByIdPort.findById(heroId)
-                .orElseThrow(NullPointerException::new);
+                .orElseThrow(() -> new HeroIdNotFoundException(heroId));
 
         PowerStatsModelApiOut powerStatsModelApiOut = getPowerStatsByIdPort.findById(heroModelApiOut.getPowerStatsId());
 
@@ -117,5 +110,10 @@ public class UpdateHeroService implements UpdateHeroUseCase {
             updatePowerStatsRequestApiOut.setStrength(updateHeroRequest.getStrength());
 
         return updatePowerStatsRequestApiOut;
+    }
+
+    private HeroModelApiOut findHeroOrFail(UUID heroId) {
+        return getHeroByIdPort.findById(heroId)
+                .orElseThrow(() -> new HeroIdNotFoundException(heroId));
     }
 }

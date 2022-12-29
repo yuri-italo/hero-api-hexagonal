@@ -25,12 +25,16 @@ public class HeroesByNameService implements HeroesByNameUseCase {
         List<HeroModelApiIn> foundHeroes = new ArrayList<>();
         List<HeroModelApiOut> heroes = getHeroesByNamePort.findManyByName(search);
 
+        createHeroModelApiInList(foundHeroes, heroes);
+
+        return foundHeroes;
+    }
+
+    private void createHeroModelApiInList(List<HeroModelApiIn> foundHeroes, List<HeroModelApiOut> heroes) {
         for (var hero : heroes) {
             PowerStatsModelApiOut powerStats = getPowerStatsByIdPort.findById(hero.getPowerStatsId());
             foundHeroes.add(createHeroModelApiIn(hero, powerStats));
         }
-
-        return foundHeroes;
     }
 
     private HeroModelApiIn createHeroModelApiIn(HeroModelApiOut hero, PowerStatsModelApiOut powerStats) {

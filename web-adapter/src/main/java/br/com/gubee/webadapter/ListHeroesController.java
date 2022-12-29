@@ -1,6 +1,5 @@
 package br.com.gubee.webadapter;
 
-import br.com.gubee.api.in.model.HeroModelApiIn;
 import br.com.gubee.api.in.ports.ListHeroesUseCase;
 import br.com.gubee.webadapter.dto.ListHeroDTO;
 import org.springframework.http.MediaType;
@@ -21,7 +20,6 @@ public class ListHeroesController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ListHeroDTO> list() {
-        List<HeroModelApiIn> heroes = listHeroesUseCase.findAll();
-        return ListHeroDTO.toCollectionDTO(heroes);
+        return ListHeroDTO.toCollectionDTO(listHeroesUseCase.findAll());
     }
 }

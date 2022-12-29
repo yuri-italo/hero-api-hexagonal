@@ -24,12 +24,16 @@ public class ListHeroesService implements ListHeroesUseCase {
         List<HeroModelApiIn> heroModelApiInList = new ArrayList<>();
         List<HeroModelApiOut> heroes = listHeroesPort.findAll();
 
+        createHeroModelApiInList(heroModelApiInList, heroes);
+
+        return heroModelApiInList;
+    }
+
+    private void createHeroModelApiInList(List<HeroModelApiIn> heroModelApiInList, List<HeroModelApiOut> heroes) {
         for (var hero : heroes) {
             PowerStatsModelApiOut powerStats = getPowerStatsByIdPort.findById(hero.getPowerStatsId());
             heroModelApiInList.add(createHeroModelApiIn(hero,powerStats));
         }
-
-        return heroModelApiInList;
     }
 
     private HeroModelApiIn createHeroModelApiIn(HeroModelApiOut hero, PowerStatsModelApiOut powerStats) {

@@ -1,5 +1,7 @@
 package br.com.gubee.interview.core.exception;
 
+import br.com.gubee.configuration.exception.HeroIdNotFoundException;
+import br.com.gubee.configuration.exception.HeroNameNotFoundException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,29 +31,29 @@ public class ExceptionAdvice {
 
 
     @ExceptionHandler(value = {Exception.class})
-    ResponseEntity<Object> handleGeneralException(Exception e) {
+    public ResponseEntity<Object> handleGeneralException(Exception e) {
         log.error("Uncaught exception, message={}", e.getMessage(), e);
         return status(INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class, MethodArgumentTypeMismatchException.class})
-    ResponseEntity<Object> handleInvalidRequest(Exception e) {
+    public ResponseEntity<Object> handleInvalidRequest(Exception e) {
         return status(BAD_REQUEST).body(e.getMessage());
     }
 
     @ExceptionHandler(value = {InvalidFormatException.class, HttpMessageNotReadableException.class})
-    ResponseEntity<Object> handleInvalidFormatException(Exception e) {
+    public ResponseEntity<Object> handleInvalidFormatException(Exception e) {
         log.warn(e.getMessage());
         return status(BAD_REQUEST).body("message.malformed-request");
     }
 
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
-    ResponseEntity<Object> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+    public ResponseEntity<Object> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         return status(METHOD_NOT_ALLOWED).body(e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<Object> handleConstraintViolationException(MethodArgumentNotValidException e) {
+    public ResponseEntity<Object> handleConstraintViolationException(MethodArgumentNotValidException e) {
         final List<String> errors = e.getBindingResult().getAllErrors().stream()
             .map(DefaultMessageSourceResolvable::getDefaultMessage)
             .collect(Collectors.toList());
@@ -59,19 +61,19 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    ResponseEntity<Object> handleIllegalStateException(IllegalStateException e) {
+    public ResponseEntity<Object> handleIllegalStateException(IllegalStateException e) {
         log.warn(e.getMessage());
         return status(FORBIDDEN).body(e.getMessage());
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    ResponseEntity<Object> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
+    public ResponseEntity<Object> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
         log.warn(e.getMessage());
         return status(UNSUPPORTED_MEDIA_TYPE).build();
     }
 
     @ExceptionHandler(value = {HttpStatusCodeException.class})
-    ResponseEntity<Object> handleHttpStatusCodeException(HttpStatusCodeException e) {
+    public ResponseEntity<Object> handleHttpStatusCodeException(HttpStatusCodeException e) {
         if (e.getStatusCode().is5xxServerError()) {
             log.error("RestTemplate communication error message={}", e.getResponseBodyAsString(), e);
         }
@@ -88,8 +90,20 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(ResourceAccessException.class)
-    ResponseEntity<Object> handleResourceAccessException(ResourceAccessException e) {
+    public ResponseEntity<Object> handleResourceAccessException(ResourceAccessException e) {
         log.error(e.getMessage(), e);
         return status(BAD_GATEWAY).body("message.integration.connection.refused");
+    }
+
+    @ExceptionHandler(HeroNameNotFoundException.class)
+    public ResponseEntity<Object> handleResourceAccessException(HeroNameNotFoundException e) {
+        log.error(e.getMessage(), e);
+        return status(NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(HeroIdNotFoundException.class)
+    public ResponseEntity<Object> handleResourceAccessException(HeroIdNotFoundException e) {
+        log.error(e.getMessage(), e);
+        return status(NOT_FOUND).body(e.getMessage());
     }
 }
