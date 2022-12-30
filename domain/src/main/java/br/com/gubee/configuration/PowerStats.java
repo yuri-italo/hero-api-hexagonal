@@ -1,5 +1,8 @@
 package br.com.gubee.configuration;
 
+import br.com.gubee.configuration.exception.InvalidStatsException;
+import br.com.gubee.configuration.exception.NullPowerStatsAttributeException;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -16,11 +19,11 @@ public class PowerStats {
     public PowerStats(
             UUID id, int strength, int agility, int dexterity, int intelligence, Instant createdAt, Instant updatedAt
     ) {
-        if (areValidFields(id,createdAt,updatedAt))
-            throw new IllegalArgumentException();
+        if (!areValidFields(id,createdAt,updatedAt))
+            throw new NullPowerStatsAttributeException("null attribute not allowed.");
 
         if (!areValidStats(strength,agility,dexterity,intelligence))
-            throw new IllegalArgumentException();
+            throw new InvalidStatsException("Stats must be in a 0 to 10 range");
 
         this.id = id;
         this.strength = strength;
@@ -31,18 +34,18 @@ public class PowerStats {
         this.updatedAt = updatedAt;
     }
 
-    private boolean areValidFields(UUID id, Instant createdAt, Instant updatedAt) {
-        return id != null && createdAt != null && updatedAt != null;
-    }
-
     public PowerStats(int strength, int agility, int dexterity, int intelligence) {
         if (!areValidStats(strength,agility,dexterity,intelligence))
-            throw new IllegalArgumentException();
+            throw new InvalidStatsException("Stats must be in a 0 to 10 range");
 
         this.strength = strength;
         this.agility = agility;
         this.dexterity = dexterity;
         this.intelligence = intelligence;
+    }
+
+    private boolean areValidFields(UUID id, Instant createdAt, Instant updatedAt) {
+        return id != null && createdAt != null && updatedAt != null;
     }
 
     private boolean areValidStats(int strength, int agility, int dexterity, int intelligence) {

@@ -1,6 +1,9 @@
 package br.com.gubee.configuration;
 
 import br.com.gubee.configuration.enums.Race;
+import br.com.gubee.configuration.exception.InvalidHeroAttributeException;
+import br.com.gubee.configuration.exception.NullRaceException;
+import br.com.gubee.configuration.exception.RaceNotFoundException;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -23,10 +26,18 @@ public class Hero {
 
     public Hero(String name, String race, UUID powerStatsId) {
         if (!isAValidHero(name,powerStatsId))
-            throw new IllegalArgumentException();
+            throw new InvalidHeroAttributeException("Blank or null attributes are not allowed.");
 
         this.name = name;
-        this.race = Race.valueOf(race);
+
+        try {
+            this.race = Race.valueOf(race);
+        } catch (IllegalArgumentException e) {
+            throw new RaceNotFoundException("\"" + race + "\"" + " is not a valid RACE ENUM.");
+        } catch (NullPointerException e) {
+            throw new NullRaceException("RACE must not be null.");
+        }
+
         this.powerStatsId = powerStatsId;
     }
 

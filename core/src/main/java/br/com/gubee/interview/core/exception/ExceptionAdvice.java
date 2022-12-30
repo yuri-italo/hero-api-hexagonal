@@ -1,7 +1,6 @@
 package br.com.gubee.interview.core.exception;
 
-import br.com.gubee.configuration.exception.HeroIdNotFoundException;
-import br.com.gubee.configuration.exception.HeroNameNotFoundException;
+import br.com.gubee.configuration.exception.*;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -96,14 +95,30 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(HeroNameNotFoundException.class)
-    public ResponseEntity<Object> handleResourceAccessException(HeroNameNotFoundException e) {
+    public ResponseEntity<Object> handleHeroNameNotFoundException(HeroNameNotFoundException e) {
         log.error(e.getMessage(), e);
         return status(NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(HeroIdNotFoundException.class)
-    public ResponseEntity<Object> handleResourceAccessException(HeroIdNotFoundException e) {
+    public ResponseEntity<Object> handleHeroIdNotFoundException(HeroIdNotFoundException e) {
         log.error(e.getMessage(), e);
         return status(NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(
+            value = {NullRaceException.class, RaceNotFoundException.class, InvalidHeroAttributeException.class}
+    )
+    public ResponseEntity<Object> handleDomainHeroExceptions(Exception e) {
+        log.error(e.getMessage(), e);
+        return status(UNPROCESSABLE_ENTITY).body(e.getMessage());
+    }
+
+    @ExceptionHandler(
+            value = {InvalidStatsException.class, NullPowerStatsAttributeException.class}
+    )
+    public ResponseEntity<Object> handleDomainPowerStatsExceptions(Exception e) {
+        log.error(e.getMessage(), e);
+        return status(UNPROCESSABLE_ENTITY).body(e.getMessage());
     }
 }
