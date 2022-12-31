@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public class CompareHeroApiIn {
-    private HeroModelApiIn heroModelApiIn;
-    private HeroModelApiIn heroModelApiIn2;
+    private final HeroModelApiIn heroModelApiIn;
+    private final HeroModelApiIn heroModelApiIn2;
 
     public CompareHeroApiIn(HeroModelApiIn heroModelApiIn, HeroModelApiIn heroModelApiIn2) {
         this.heroModelApiIn = heroModelApiIn;
