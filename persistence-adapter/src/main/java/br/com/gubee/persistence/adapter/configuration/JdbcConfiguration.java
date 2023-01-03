@@ -1,4 +1,4 @@
-package br.com.gubee.configuration;
+package br.com.gubee.persistence.adapter.configuration;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
