@@ -1,9 +1,6 @@
 package br.com.gubee.persistence.adapter;
 
-import br.com.gubee.api.out.DeletePowerStatsByIdPort;
-import br.com.gubee.api.out.GetPowerStatsByIdPort;
-import br.com.gubee.api.out.RegisterPowerStatsPort;
-import br.com.gubee.api.out.UpdatePowerStatsPort;
+import br.com.gubee.api.out.*;
 import br.com.gubee.api.out.model.PowerStatsModelApiOut;
 import br.com.gubee.api.out.requests.RegisterPowerStatsRequest;
 import br.com.gubee.api.out.requests.UpdatePowerStatsRequestApiOut;
@@ -15,13 +12,14 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
 public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort,
-        GetPowerStatsByIdPort, UpdatePowerStatsPort, DeletePowerStatsByIdPort
+        GetPowerStatsByIdPort, ListPowerStatsPort, UpdatePowerStatsPort, DeletePowerStatsByIdPort
 {
 
     private static final String CREATE_POWER_STATS_QUERY = "INSERT INTO power_stats" +
@@ -31,6 +29,9 @@ public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort,
     private static final String FIND_POWER_STATS_BY_UUID_QUERY = "SELECT *" +
             " FROM power_stats" +
             " WHERE id = :uuid";
+
+    private static final String FIND_ALL_POWER_STATS_QUERY = "SELECT *" +
+            " FROM power_stats";
 
     private static final String UPDATE_POWER_STATS_BY_ID_QUERY = "UPDATE power_stats" +
             " SET strength = :strength," +
@@ -71,6 +72,14 @@ public class PowerStatsRepositoryPostgreImpl implements RegisterPowerStatsPort,
         }
 
         return powerStats;
+    }
+
+    @Override
+    public List<PowerStatsModelApiOut> findAll() {
+        return namedParameterJdbcTemplate.query(
+                FIND_ALL_POWER_STATS_QUERY,
+                new PowerStatsRowMapper()
+        );
     }
 
     @Override
