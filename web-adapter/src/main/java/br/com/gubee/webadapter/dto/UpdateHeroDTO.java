@@ -2,20 +2,22 @@ package br.com.gubee.webadapter.dto;
 
 import br.com.gubee.api.in.model.HeroModelApiIn;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Getter
+@NoArgsConstructor
 public class UpdateHeroDTO {
-    private final UUID id;
-    private final String name;
-    private final String race;
-    private final String createdAt;
-    private final String updatedAt;
-    private final boolean enabled;
-    private final UpdatePowerStatsDTO powerStats;
+    private UUID id;
+    private String name;
+    private String race;
+    private String createdAt;
+    private String updatedAt;
+    private boolean enabled;
+    private UpdatePowerStatsDTO powerStats;
 
     public UpdateHeroDTO(HeroModelApiIn heroModelApiIn) {
         this.id = heroModelApiIn.getId();

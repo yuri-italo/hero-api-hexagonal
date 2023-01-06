@@ -53,6 +53,16 @@
 
         <dependency>
             <groupId>gubee</groupId>
+            <artifactId>api-in</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>gubee</groupId>
+            <artifactId>api-out</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>gubee</groupId>
             <artifactId>configuration</artifactId>
         </dependency>
     </dependencies>
