@@ -17,10 +17,12 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = {PowerStatsRepositoryPostgreImpl.class, JdbcConfiguration.class})
+@SpringBootTest(classes = {PowerStatsRepositoryPostgreImpl.class, HeroRepositoryPostgreImpl.class, JdbcConfiguration.class})
 class PowerStatsRepositoryPostgreImplTest {
     @Autowired
     PowerStatsRepositoryPostgreImpl powerStatsRepository;
+
+    @Autowired HeroRepositoryPostgreImpl heroRepository;
 
     @BeforeEach
     void setUp() {
@@ -149,6 +151,8 @@ class PowerStatsRepositoryPostgreImplTest {
     }
 
     private void dbCleaner() {
+        heroRepository.findAll()
+                .forEach(heroModelApiOut -> heroRepository.delete(heroModelApiOut.getId()));
         powerStatsRepository.findAll()
                 .forEach(powerStatsModelApiOut -> powerStatsRepository.delete(powerStatsModelApiOut.getId()));
     }

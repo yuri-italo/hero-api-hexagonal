@@ -1,86 +1,86 @@
 package br.com.gubee.application;
 
 import br.com.gubee.api.in.requests.CreateHeroRequest;
+import br.com.gubee.api.out.GetHeroByIdPort;
 import br.com.gubee.api.out.RegisterHeroPort;
 import br.com.gubee.api.out.RegisterPowerStatsPort;
-import br.com.gubee.api.out.requests.RegisterHeroRequest;
-import br.com.gubee.api.out.requests.RegisterPowerStatsRequest;
-import br.com.gubee.configuration.PowerStats;
-import org.junit.jupiter.api.Assertions;
+import br.com.gubee.api.out.model.HeroModelApiOut;
+import br.com.gubee.application.impl.HeroRepositoryInMemoryImpl;
+import br.com.gubee.application.impl.PowerStatsRepositoryInMemoryImpl;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
 class RegisterHeroServiceTest {
-    private final RegisterHeroPort registerHeroPort = mock(RegisterHeroPort.class);
-    private final RegisterPowerStatsPort registerPowerStatsPort = mock(RegisterPowerStatsPort.class);
+    private final RegisterHeroPort registerHeroPort = new HeroRepositoryInMemoryImpl();
+    private final RegisterPowerStatsPort registerPowerStatsPort = new PowerStatsRepositoryInMemoryImpl();
+    private final GetHeroByIdPort getHeroByIdPort= new HeroRepositoryInMemoryImpl();
     private final RegisterHeroService registerHeroService = new RegisterHeroService(
             registerHeroPort,registerPowerStatsPort
     );
+
+    @AfterEach
+    void setUp() {
+        cleanStorage();
+    }
+
     @Test
     void registerHeroSucceeds() {
         // given
         CreateHeroRequest request = givenHeroRequest();
-        PowerStats powerStats = givenPowerStats(request);
-
-        UUID heroId = givenHero(request, powerStats.getId());
 
         // when
         UUID uuid = registerHeroService.registerHero(request);
 
         // then
-        Assertions.assertNotNull(uuid);
-        Assertions.assertEquals(heroId,uuid);
+        assertNotNull(uuid);
+        assertTrue(getHeroByIdPort.findById(uuid).isPresent());
+
+        HeroModelApiOut createdHero = getHeroByIdPort.findById(uuid).get();
+        assertEquals(request.getName(),createdHero.getName());
+        assertEquals(request.getRace(),createdHero.getRace());
+        assertTrue(createdHero.isEnabled());
+        assertNotNull(createdHero.getCreatedAt());
+        assertNotNull(createdHero.getUpdatedAt());
     }
 
-    private PowerStats givenPowerStats(CreateHeroRequest createHeroRequest) {
-        PowerStats powerStats = new PowerStats(
-                UUID.randomUUID(),
-                createHeroRequest.getStrength(),
-                createHeroRequest.getAgility(),
-                createHeroRequest.getDexterity(),
-                createHeroRequest.getIntelligence(),
-                Instant.now(),
-                Instant.now()
+    @Test
+    void registerHeroShouldNotSucceedsWhenHeroNameExists() {
+        // given
+        CreateHeroRequest request = givenHeroRequest();
+
+        // when
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class, () -> registerHeroService.registerHero(request)
         );
 
-        RegisterPowerStatsRequest request = RegisterPowerStatsRequest.builder()
-                .agility(powerStats.getAgility())
-                .dexterity(powerStats.getDexterity())
-                .intelligence(powerStats.getIntelligence())
-                .strength(powerStats.getStrength())
-                .build();
-
-        when(registerPowerStatsPort.registerPowerStats(request)).thenReturn(powerStats.getId());
-
-        return powerStats;
-    }
-
-    private UUID givenHero(CreateHeroRequest createHeroRequest, UUID powerStatsId) {
-        UUID uuid = UUID.randomUUID();
-
-        RegisterHeroRequest request = RegisterHeroRequest.builder()
-                .name(createHeroRequest.getName())
-                .race(createHeroRequest.getRace())
-                .build();
-
-        when(registerHeroPort.registerHero(request,powerStatsId)).thenReturn(uuid);
-
-        return uuid;
+        // then
+        assertNotNull(e);
     }
 
     private CreateHeroRequest givenHeroRequest() {
         return CreateHeroRequest.builder()
-                .name("Batman")
+                .name("Super Shock")
                 .race("HUMAN")
                 .agility(10)
                 .dexterity(9)
                 .intelligence(8)
                 .strength(7)
                 .build();
+    }
+
+    private void cleanStorage() {
+        List<HeroModelApiOut> heroes = new ArrayList<>();
+
+        for(Map.Entry<UUID,HeroModelApiOut> entry : HeroRepositoryInMemoryImpl.heroStorage.entrySet())
+            heroes.add(entry.getValue());
+
+        heroes.forEach(h -> PowerStatsRepositoryInMemoryImpl.powerStatsStorage.remove(h.getId()));
     }
 }

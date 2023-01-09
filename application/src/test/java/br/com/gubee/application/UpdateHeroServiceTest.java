@@ -8,37 +8,46 @@ import br.com.gubee.api.out.UpdateHeroPort;
 import br.com.gubee.api.out.UpdatePowerStatsPort;
 import br.com.gubee.api.out.model.HeroModelApiOut;
 import br.com.gubee.api.out.model.PowerStatsModelApiOut;
+import br.com.gubee.application.impl.HeroRepositoryInMemoryImpl;
+import br.com.gubee.application.impl.PowerStatsRepositoryInMemoryImpl;
 import br.com.gubee.configuration.exception.HeroIdNotFoundException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.time.Instant;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 class UpdateHeroServiceTest {
-    private final GetHeroByIdPort getHeroByIdPort = Mockito.mock(GetHeroByIdPort.class);
-    private final UpdateHeroPort updateHeroPort = Mockito.mock(UpdateHeroPort.class);
-    private final GetPowerStatsByIdPort getPowerStatsByIdPort = Mockito.mock(GetPowerStatsByIdPort.class);
-    private final UpdatePowerStatsPort updatePowerStatsPort = Mockito.mock(UpdatePowerStatsPort.class);
+    private final GetHeroByIdPort getHeroByIdPort = new HeroRepositoryInMemoryImpl();
+    private final UpdateHeroPort updateHeroPort = new HeroRepositoryInMemoryImpl();
+    private final GetPowerStatsByIdPort getPowerStatsByIdPort = new PowerStatsRepositoryInMemoryImpl();
+    private final UpdatePowerStatsPort updatePowerStatsPort = new PowerStatsRepositoryInMemoryImpl();
     private final UpdateHeroService updateHeroService = new UpdateHeroService(
             getHeroByIdPort,updateHeroPort,getPowerStatsByIdPort,updatePowerStatsPort
     );
 
+    @AfterEach
+    void setUp() {
+        cleanStorage();
+    }
+
     @Test
     void updateSucceeds() {
         // given
-        UUID uuid = UUID.randomUUID();
-        HeroModelApiOut hero = givenExistingHeroId(uuid);
-        PowerStatsModelApiOut powerStats = givenPowerStats(hero.getPowerStatsId());
+        HeroModelApiOut heroModelApiOut = createHeroModelApiOut();
+        HeroRepositoryInMemoryImpl.heroStorage.put(heroModelApiOut.getId(),heroModelApiOut);
+        PowerStatsModelApiOut powerStatsModelApiOut = createPowerStatsModelApiOut(heroModelApiOut);
+        PowerStatsRepositoryInMemoryImpl.powerStatsStorage.put(powerStatsModelApiOut.getId(),powerStatsModelApiOut);
+
         UpdateHeroRequest updateHeroRequest = givenUpdateHeroRequest();
-        givenUpdatedHero(updateHeroRequest,hero,powerStats);
 
         // when
-        HeroModelApiIn updatedHero = updateHeroService.update(uuid, updateHeroRequest);
+        HeroModelApiIn updatedHero = updateHeroService.update(heroModelApiOut.getId(), updateHeroRequest);
 
         // then
         assertNotNull(updatedHero);
@@ -57,7 +66,6 @@ class UpdateHeroServiceTest {
     void updateShouldNotSucceedsWhenIdNotExists() {
         // given
         UUID uuid = UUID.randomUUID();
-        givenNotExistingHeroId(uuid);
         UpdateHeroRequest updateHeroRequest = givenUpdateHeroRequest();
 
         // when
@@ -68,42 +76,6 @@ class UpdateHeroServiceTest {
         // then
         assertNotNull(e);
         assertEquals(e.getMessage(),String.format("Hero ID not found: %s", uuid));
-    }
-
-    private HeroModelApiOut givenExistingHeroId(UUID uuid) {
-        HeroModelApiOut heroModelApiOut = HeroModelApiOut.builder()
-                .id(uuid)
-                .name("Batman")
-                .race("HUMAN")
-                .powerStatsId(UUID.randomUUID())
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .enabled(true)
-                .build();
-
-        when(getHeroByIdPort.findById(uuid)).thenReturn(Optional.of(heroModelApiOut));
-
-        return heroModelApiOut;
-    }
-
-    private void givenNotExistingHeroId(UUID uuid) {
-        when(getHeroByIdPort.findById(uuid)).thenReturn(Optional.empty());
-    }
-
-    private PowerStatsModelApiOut givenPowerStats(UUID powerStatsId) {
-        PowerStatsModelApiOut powerStatsModelApiOut = PowerStatsModelApiOut.builder()
-                .id(powerStatsId)
-                .agility(10)
-                .dexterity(10)
-                .intelligence(10)
-                .strength(10)
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .build();
-
-        when(getPowerStatsByIdPort.findById(powerStatsId)).thenReturn(powerStatsModelApiOut);
-
-        return powerStatsModelApiOut;
     }
 
     private UpdateHeroRequest givenUpdateHeroRequest() {
@@ -119,31 +91,36 @@ class UpdateHeroServiceTest {
                 .build();
     }
 
-    private void givenUpdatedHero(
-            UpdateHeroRequest updateHeroRequest, HeroModelApiOut hero, PowerStatsModelApiOut powerStats
-    ) {
-        HeroModelApiOut heroModelApiOut = HeroModelApiOut.builder()
-                .id(hero.getId())
-                .name(updateHeroRequest.getName())
-                .race(updateHeroRequest.getRace())
-                .powerStatsId(hero.getPowerStatsId())
-                .enabled(updateHeroRequest.getEnabled())
-                .updatedAt(hero.getUpdatedAt())
-                .createdAt(hero.getCreatedAt())
+    private PowerStatsModelApiOut createPowerStatsModelApiOut(HeroModelApiOut heroModelApiOut) {
+        return PowerStatsModelApiOut.builder()
+                .id(heroModelApiOut.getPowerStatsId())
+                .agility(10)
+                .dexterity(9)
+                .intelligence(8)
+                .strength(7)
+                .createdAt(heroModelApiOut.getCreatedAt())
+                .updatedAt(heroModelApiOut.getUpdatedAt())
                 .build();
+    }
 
-        when(getHeroByIdPort.findById(hero.getId())).thenReturn(Optional.of(heroModelApiOut));
-
-        PowerStatsModelApiOut powerStatsModelApiOut = PowerStatsModelApiOut.builder()
-                .id(powerStats.getId())
-                .agility(updateHeroRequest.getAgility())
-                .dexterity(updateHeroRequest.getDexterity())
-                .intelligence(updateHeroRequest.getIntelligence())
-                .strength(updateHeroRequest.getStrength())
-                .createdAt(powerStats.getCreatedAt())
-                .updatedAt(powerStats.getUpdatedAt())
+    private HeroModelApiOut createHeroModelApiOut() {
+        return HeroModelApiOut.builder()
+                .id(UUID.randomUUID())
+                .name("Batman")
+                .race("HUMAN")
+                .powerStatsId(UUID.randomUUID())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .enabled(true)
                 .build();
+    }
 
-        when(getPowerStatsByIdPort.findById(powerStats.getId())).thenReturn(powerStatsModelApiOut);
+    private void cleanStorage() {
+        List<HeroModelApiOut> heroes = new ArrayList<>();
+
+        for(Map.Entry<UUID,HeroModelApiOut> entry : HeroRepositoryInMemoryImpl.heroStorage.entrySet())
+            heroes.add(entry.getValue());
+
+        heroes.forEach(h -> PowerStatsRepositoryInMemoryImpl.powerStatsStorage.remove(h.getId()));
     }
 }

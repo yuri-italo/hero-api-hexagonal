@@ -38,6 +38,9 @@
         <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
         <jaxb.version>2.3.1</jaxb.version>
         <disruptor.version>3.4.2</disruptor.version>
+        <javax.validation.version>2.0.1.Final</javax.validation.version>
+        <required.maven.version>[3.6.0,)</required.maven.version>
+        <maven.release.puglin.version>2.5.3</maven.release.puglin.version>
     </properties>
 
     <modules>
@@ -130,6 +133,12 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax.validation.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -172,10 +181,10 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.6.0,)</version>
+                                    <version>${required.maven.version}</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
-                                    <version>17</version>
+                                    <version>${java.version}</version>
                                 </requireJavaVersion>
                                 <requireReleaseDeps>
                                     <onlyWhenRelease>true</onlyWhenRelease>
@@ -189,7 +198,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>${maven.release.puglin.version}</version>
                 <configuration>
                     <arguments>-DskipTests -DskipITs</arguments>
                 </configuration>

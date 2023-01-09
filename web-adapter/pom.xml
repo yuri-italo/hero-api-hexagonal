@@ -15,7 +15,6 @@
         <dependency>
             <groupId>gubee</groupId>
             <artifactId>api-in</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
