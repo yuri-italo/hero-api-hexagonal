@@ -4,26 +4,27 @@ import br.com.gubee.api.out.model.HeroModelApiOut;
 import br.com.gubee.api.out.requests.RegisterHeroRequest;
 import br.com.gubee.api.out.requests.RegisterPowerStatsRequest;
 import br.com.gubee.api.out.requests.UpdateHeroRequestApiOut;
-import br.com.gubee.persistence.adapter.configuration.JdbcConfiguration;
+import br.com.gubee.persistence.adapter.configuration.ContainersEnvironment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-@ActiveProfiles("test")
-@SpringBootTest(classes = {HeroRepositoryPostgreImpl.class, PowerStatsRepositoryPostgreImpl.class, JdbcConfiguration.class})
-class HeroRepositoryPostgreImplTest {
+@SpringBootTest(properties = "spring.profiles.active:test")
+@ExtendWith(SpringExtension.class)
+class HeroRepositoryPostgreImplTest extends ContainersEnvironment {
     @Autowired
     HeroRepositoryPostgreImpl heroRepository;
     @Autowired
     PowerStatsRepositoryPostgreImpl powerStatsRepository;
+
     @BeforeEach
     void setUp() {
         dbCleaner();

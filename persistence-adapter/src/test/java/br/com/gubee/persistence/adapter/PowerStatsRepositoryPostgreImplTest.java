@@ -3,12 +3,12 @@ package br.com.gubee.persistence.adapter;
 import br.com.gubee.api.out.model.PowerStatsModelApiOut;
 import br.com.gubee.api.out.requests.RegisterPowerStatsRequest;
 import br.com.gubee.api.out.requests.UpdatePowerStatsRequestApiOut;
-import br.com.gubee.persistence.adapter.configuration.JdbcConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
 import java.util.List;
@@ -16,8 +16,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles("test")
-@SpringBootTest(classes = {PowerStatsRepositoryPostgreImpl.class, HeroRepositoryPostgreImpl.class, JdbcConfiguration.class})
+@SpringBootTest(properties = "spring.profiles.active:test")
+@ExtendWith(SpringExtension.class)
 class PowerStatsRepositoryPostgreImplTest {
     @Autowired
     PowerStatsRepositoryPostgreImpl powerStatsRepository;

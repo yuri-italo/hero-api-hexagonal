@@ -41,6 +41,7 @@
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <required.maven.version>[3.6.0,)</required.maven.version>
         <maven.release.puglin.version>2.5.3</maven.release.puglin.version>
+        <test.container.version>1.17.6</test.container.version>
     </properties>
 
     <modules>
@@ -109,11 +110,13 @@
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-core</artifactId>
                 <version>${jaxb.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
@@ -138,6 +141,27 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>${javax.validation.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${test.container.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${test.container.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${test.container.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
