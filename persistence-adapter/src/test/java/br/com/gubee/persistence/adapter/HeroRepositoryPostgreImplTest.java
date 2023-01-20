@@ -4,26 +4,38 @@ import br.com.gubee.api.out.model.HeroModelApiOut;
 import br.com.gubee.api.out.requests.RegisterHeroRequest;
 import br.com.gubee.api.out.requests.RegisterPowerStatsRequest;
 import br.com.gubee.api.out.requests.UpdateHeroRequestApiOut;
-import br.com.gubee.persistence.adapter.configuration.ContainersEnvironment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-@SpringBootTest(properties = "spring.profiles.active:test")
-@ExtendWith(SpringExtension.class)
-class HeroRepositoryPostgreImplTest extends ContainersEnvironment {
+@SpringBootTest(properties = "spring.profiles.active=test")
+@Testcontainers
+class HeroRepositoryPostgreImplTest {
     @Autowired
     HeroRepositoryPostgreImpl heroRepository;
     @Autowired
     PowerStatsRepositoryPostgreImpl powerStatsRepository;
+
+    @Container
+    private static PostgreSQLContainer container = new PostgreSQLContainer("postgres:14.6");
+
+    @DynamicPropertySource
+    public static void overrideProps(DynamicPropertyRegistry registry) {
+        registry.add("jdbc.url", container::getJdbcUrl);
+        registry.add("jdbc.username", container::getUsername);
+        registry.add("jdbc.password", container::getPassword);
+    }
 
     @BeforeEach
     void setUp() {

@@ -7,28 +7,21 @@ import br.com.gubee.api.out.RegisterPowerStatsPort;
 import br.com.gubee.api.out.model.HeroModelApiOut;
 import br.com.gubee.application.impl.HeroRepositoryInMemoryImpl;
 import br.com.gubee.application.impl.PowerStatsRepositoryInMemoryImpl;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class RegisterHeroServiceTest {
-    private final RegisterHeroPort registerHeroPort = new HeroRepositoryInMemoryImpl();
-    private final RegisterPowerStatsPort registerPowerStatsPort = new PowerStatsRepositoryInMemoryImpl();
-    private final GetHeroByIdPort getHeroByIdPort= new HeroRepositoryInMemoryImpl();
+    HeroRepositoryInMemoryImpl heroRepositoryInMemory = new HeroRepositoryInMemoryImpl();
+    PowerStatsRepositoryInMemoryImpl powerStatsRepositoryInMemory = new PowerStatsRepositoryInMemoryImpl();
+    private final RegisterHeroPort registerHeroPort = heroRepositoryInMemory;
+    private final RegisterPowerStatsPort registerPowerStatsPort = powerStatsRepositoryInMemory;
+    private final GetHeroByIdPort getHeroByIdPort = heroRepositoryInMemory;
     private final RegisterHeroService registerHeroService = new RegisterHeroService(
             registerHeroPort,registerPowerStatsPort
     );
-
-    @AfterEach
-    void setUp() {
-        cleanStorage();
-    }
 
     @Test
     void registerHeroSucceeds() {
@@ -54,6 +47,8 @@ class RegisterHeroServiceTest {
     void registerHeroShouldNotSucceedsWhenHeroNameExists() {
         // given
         CreateHeroRequest request = givenHeroRequest();
+        registerHeroService.registerHero(request);
+
 
         // when
         IllegalArgumentException e = assertThrows(
@@ -73,14 +68,5 @@ class RegisterHeroServiceTest {
                 .intelligence(8)
                 .strength(7)
                 .build();
-    }
-
-    private void cleanStorage() {
-        List<HeroModelApiOut> heroes = new ArrayList<>();
-
-        for(Map.Entry<UUID,HeroModelApiOut> entry : HeroRepositoryInMemoryImpl.heroStorage.entrySet())
-            heroes.add(entry.getValue());
-
-        heroes.forEach(h -> PowerStatsRepositoryInMemoryImpl.powerStatsStorage.remove(h.getId()));
     }
 }

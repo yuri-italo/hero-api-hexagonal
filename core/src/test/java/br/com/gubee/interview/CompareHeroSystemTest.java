@@ -6,9 +6,6 @@ import br.com.gubee.api.in.ports.HeroByIdUseCase;
 import br.com.gubee.api.in.ports.ListHeroesUseCase;
 import br.com.gubee.api.in.ports.RegisterHeroUseCase;
 import br.com.gubee.api.in.requests.CreateHeroRequest;
-import br.com.gubee.persistence.adapter.HeroRepositoryPostgreImpl;
-import br.com.gubee.persistence.adapter.PowerStatsRepositoryPostgreImpl;
-import br.com.gubee.persistence.adapter.configuration.JdbcConfiguration;
 import br.com.gubee.webadapter.dto.ComparedHeroDTO;
 import br.com.gubee.webadapter.dto.TwoComparedHeroDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +16,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -30,9 +25,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ContextConfiguration(classes = {HeroRepositoryPostgreImpl.class, PowerStatsRepositoryPostgreImpl.class, JdbcConfiguration.class})
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.profiles.active=test")
 @Testcontainers
 class CompareHeroSystemTest {
     @LocalServerPort
@@ -53,9 +47,9 @@ class CompareHeroSystemTest {
 
     @DynamicPropertySource
     public static void overrideProps(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url",container::getJdbcUrl);
-        registry.add("spring.datasource.username",container::getUsername);
-        registry.add("spring.datasource.password",container::getPassword);
+        registry.add("jdbc.url",container::getJdbcUrl);
+        registry.add("jdbc.username",container::getUsername);
+        registry.add("jdbc.password",container::getPassword);
     }
 
     @BeforeEach

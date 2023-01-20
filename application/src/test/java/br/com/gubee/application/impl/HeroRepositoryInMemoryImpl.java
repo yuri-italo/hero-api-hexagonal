@@ -16,7 +16,7 @@ public class HeroRepositoryInMemoryImpl implements
         RegisterHeroPort, GetHeroByIdPort, GetHeroesByNamePort, FindHeroByNamePort, ListHeroesPort, UpdateHeroPort,
         DeleteHeroByIdPort
 {
-    public static Map<UUID, HeroModelApiOut> heroStorage = new HashMap<>();
+    private final Map<UUID, HeroModelApiOut> heroStorage = new HashMap<>();
     @Override
     public UUID registerHero(RegisterHeroRequest request, UUID powerStatsId) {
 

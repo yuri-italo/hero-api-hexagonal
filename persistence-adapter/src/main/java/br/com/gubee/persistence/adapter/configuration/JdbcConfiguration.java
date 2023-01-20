@@ -27,18 +27,6 @@ public class JdbcConfiguration {
     @Value("${jdbc.schema}")
     private String schema;
 
-    @Value("${jdbc.url}")
-    private String jdbcUrlTest;
-
-    @Value("${jdbc.username}")
-    private String usernameTest;
-
-    @Value("${jdbc.password}")
-    private String passwordTest;
-
-    @Value("${jdbc.schema}")
-    private String schemaTest;
-
     @Bean
     @Profile("!test")
     public DataSource dataSource() {
@@ -62,12 +50,12 @@ public class JdbcConfiguration {
         HikariDataSource dataSource = new HikariDataSource();
 
         dataSource.setDriverClassName(org.postgresql.Driver.class.getName());
-        dataSource.setJdbcUrl(jdbcUrlTest);
-        dataSource.setUsername(usernameTest);
-        dataSource.setPassword(passwordTest);
+        dataSource.setJdbcUrl(jdbcUrl);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
         dataSource.setMaximumPoolSize(getMaxPoolSize());
-        dataSource.setConnectionTimeout(TimeUnit.SECONDS.toMillis(5L));
-        dataSource.setSchema(schemaTest);
+        dataSource.setConnectionTimeout(TimeUnit.SECONDS.toMillis(100L));
+        dataSource.setSchema(schema);
         return dataSource;
     }
 

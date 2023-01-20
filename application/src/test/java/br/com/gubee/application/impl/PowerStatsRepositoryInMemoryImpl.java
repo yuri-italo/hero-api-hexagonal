@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class PowerStatsRepositoryInMemoryImpl implements
         RegisterPowerStatsPort, GetPowerStatsByIdPort, UpdatePowerStatsPort, DeletePowerStatsByIdPort {
-    public static final Map<UUID, PowerStatsModelApiOut> powerStatsStorage = new HashMap<>();
+    private final Map<UUID, PowerStatsModelApiOut> powerStatsStorage = new HashMap<>();
 
     @Override
     public UUID registerPowerStats(RegisterPowerStatsRequest request) {
